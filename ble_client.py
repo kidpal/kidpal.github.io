@@ -1,38 +1,70 @@
 import asyncio
 from bleak import BleakClient, BleakScanner
 
-
 async def connect_and_interact(address: str):
     # Connect to the BLE device
     async with BleakClient(address) as client:
-        print(f"Connected: {client.is_connected}")
+        counter = 0
+        while True:
+            print(f"Connected: {client.is_connected}")
 
-        # Discover GATT services
-        services = await client.get_services()
-        print("Discovered GATT services:")
-        for service in services:
-            print(f"- Service UUID: {service.uuid}")
-            for characteristic in service.characteristics:
-                print(f"  - Characteristic UUID: {characteristic.uuid}")
-                print(f"    Properties: {characteristic.properties}")
+            # Discover GATT services
+            services = await client.get_services()
+            print("Discovered GATT services:")
+            for service in services:
+                print(f"- Service UUID: {service.uuid}")
+                for characteristic in service.characteristics:
+                    print(f"  - Characteristic UUID: {characteristic.uuid}")
+                    print(f"    Properties: {characteristic.properties}")
 
-                # If readable, read the value of the characteristic
-                if "read" in characteristic.properties:
-                    try:
-                        value = await client.read_gatt_char(characteristic.uuid)
-                        print(f"    Value: {value}")
-                    except Exception as e:
-                        print(f"    Failed to read characteristic: {e}")
+                    # If readable, read the value of the characteristic
+                    if "read" in characteristic.properties:
+                        try:
+                            value = await client.read_gatt_char(characteristic.uuid)
+                            if ( characteristic.uuid == "0a0a1011-4e41-4249-5f49-445f42415345"):
+                                print("    Value: ",end=" ")
+                                for v in value: print(int(v), end=" ")
+                                print("\n")
+                            else:
+                                print(f"    Value: {value}")
+                        except Exception as e:
+                            print(f"    Failed to read characteristic: {e}")
+                    
+                    # If writeable, write the value to the characteristic
+                    if "write" in characteristic.properties:
+                        try:
+                            # data = bytearray([0x88, 0x88, 0x88, 0x88])
+                            data = bytearray([counter+1,counter+2,counter+3,counter+4,counter+5])
+                            await client.write_gatt_char(characteristic.uuid, data)
+                            print("    Write values: ", end=" ")
+                            for d in data: print(f"{int(d)}", end=" ")
+                            print(f" successfully written to characteristic {characteristic.uuid} \n")
+                        except Exception as e:
+                            print(f"    Failed to write characteristic: {e}")
 
-                # Optionally subscribe to notifications for characteristics
-                if "notify" in characteristic.properties:
-                    def notification_handler(sender, data):
-                        print(f"Notification from {sender}: {data}")
+                    # Optionally subscribe to notifications for characteristics
+                    if "notify" in characteristic.properties:
+                        def notification_handler(sender, data):
+                            print(f"Notification from {sender}: {data}")
 
-                    await client.start_notify(characteristic.uuid, notification_handler)
-                    await asyncio.sleep(5)  # Receive notifications for 5 seconds
-                    await client.stop_notify(characteristic.uuid)
+                        await client.start_notify(characteristic.uuid, notification_handler)
+                        await asyncio.sleep(5)  # Receive notifications for 5 seconds
+                        await client.stop_notify(characteristic.uuid)
+            
+            # try:
+            #     # Replace with the UUID of the GATT characteristic to write to
+            #     characteristic_uuid = "0000bbbb-0000-1000-8000-00805f9b34fb"
+            #     # Replace with the data to write (in bytes)
+            #     data = bytearray([0x88, 0x88, 0x88, 0x88])
 
+            #     await client.write_gatt_char(characteristic_uuid, data)
+            #     print(f"Data {data} successfully written to characteristic {characteristic_uuid}")
+            # except Exception as e:
+            #     print(f"Failed to write to GATT characteristic: {e}")
+            
+            counter += 5
+            if counter >= 255: counter = 0
+            await asyncio.sleep(5)       
 
 async def main():
     # # Discover BLE devices
