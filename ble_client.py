@@ -1,9 +1,11 @@
 import asyncio
+from datetime import datetime
 from bleak import BleakClient, BleakScanner
 
 async def connect_and_interact(address: str):
     # Connect to the BLE device
     async with BleakClient(address) as client:
+        start_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         counter = 0
         while True:
             print(f"Connected: {client.is_connected}")
@@ -64,6 +66,7 @@ async def connect_and_interact(address: str):
             
             counter += 5
             if counter >= 255: counter = 0
+            print(f"\nTest start: {start_time} to {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
             await asyncio.sleep(5)       
 
 async def main():
