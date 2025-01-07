@@ -36,16 +36,22 @@ async def connect_and_interact(address: str):
                     if "write" in characteristic.properties:
                         try:
                             # data = bytearray([0x88, 0x88, 0x88, 0x88])
-                            data = bytearray([counter+1,counter+2,counter+3,counter+4,counter+5])
+                            # data = bytearray([counter+1,counter+2,counter+3,counter+4,counter+5])
+                            # counter += 5
+
+                            # counter += 1
+                            if counter%2 == 0:
+                                data = bytearray([0x65, 0x00]) # Mio Command 0x65, item 0x00
+                            else:
+                                data = bytearray([0x65, 0x01]) # Mio Command 0x65, item 0x01
+                            
+                            if counter >= 255: counter = 0
                             await client.write_gatt_char(characteristic.uuid, data)
                             print("    Write values: ", end=" ")
                             for d in data: print(f"{int(d)}", end=" ")
                             print(f" successfully written to characteristic {characteristic.uuid} \n")
                         except Exception as e:
                             print(f"    Failed to write characteristic: {e}")
-                        
-                        counter += 5
-                        if counter >= 255: counter = 0
 
                     # Optionally subscribe to notifications for characteristics
                     if "notify" in characteristic.properties:
