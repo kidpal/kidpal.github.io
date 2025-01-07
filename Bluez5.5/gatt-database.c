@@ -700,7 +700,13 @@ done:
 }
 
 /* Test read callback of custom service and characteristics */
-static uint8_t MioResult[3] = {0x00, 0x00, 0x00};
+static uint8_t TestResult[5] = {0x00, 0x00, 0x00, 0x00, 0x00};
+static uint8_t WiFiSSID[] = {0x4D, 0x69, 0x56, 0x75, 0x65, 
+								0x5F, 
+								0x62, 0x30, 0x30, 0x35, 0x35, 0x30}; //MiVue_b00550
+static uint8_t WiFiPASS[] = {0x32, 0x30, 0x31, 0x30, 0x32, 0x33, 0x38, 0x32, 0x35, 0x36}; //2010238256
+static const uint8_t *constTestResult = NULL;//TestResult;
+static size_t sizeOfResult = 0;
 
 static void gatt_custom_cp_read_cb(struct gatt_db_attribute *attrib,
 					unsigned int id, uint16_t offset,
@@ -708,19 +714,15 @@ static void gatt_custom_cp_read_cb(struct gatt_db_attribute *attrib,
 					void *user_data)
 {
 	struct server *server = user_data;
-	//uint8_t value[5];
 
 	DBG("Test control point read callback of custom service and characteristics");
-
-	//value[0] = server->svc_chngd_enabled ? 0x02 : 0x00;
-	/*value[0] = 0x00;
-	value[1] = 0x01;
-	value[2] = 0x02;
-	value[3] = 0x04;
-	value[4] = 0x08;*/
-
-	//gatt_db_attribute_read_result(attrib, id, 0, value, sizeof(value));
-	gatt_db_attribute_read_result(attrib, id, 0, MioResult, sizeof(MioResult));
+	if (strlen(constTestResult) >= 5) {
+		DBG("Test control point read %d %d %d %d %d\n", 
+				constTestResult[0], constTestResult[1], constTestResult[2], 
+				constTestResult[3], constTestResult[4]);
+	}	
+	
+	gatt_db_attribute_read_result(attrib, id, 0, constTestResult, sizeOfResult);//sizeof(TestResult));
 }
 
 /* Test write callback of custom service and characteristics */
@@ -735,9 +737,8 @@ static void gatt_custom_cp_write_cb(struct gatt_db_attribute *attrib,
 	
 	DBG("Test write callback of custom service and characteristics\n");
 
-	if (!value || len < 2) { //len != 5) {s
-		//ecode = BT_ATT_ERROR_INVALID_ATTRIBUTE_VALUE_LEN;
-		ecode = 0xFF;
+	if (!value || len < 2) { //len != 5) {
+		ecode = BT_ATT_ERROR_INVALID_ATTRIBUTE_VALUE_LEN;
 		goto done;
 	}
 
@@ -745,31 +746,46 @@ static void gatt_custom_cp_write_cb(struct gatt_db_attribute *attrib,
 		ecode = BT_ATT_ERROR_INVALID_OFFSET;
 		goto done;
 	}*/
-
 	if (value[0] == 0x65) {
-		if (value[0] == 0x00) {
-			MioResult[0] = 0x65;
-			MioResult[1] = 0x00;
-			MioResult[3] = 0xFF;
+		if (value[1] == 0x00) {
+			/*TestResult[0] = 0x65;
+			TestResult[1] = 0x00;
+			TestResult[2] = 0x00;
+			TestResult[3] = 0x00;
+			TestResult[4] = 0x00;*/
+			constTestResult = WiFiPASS;
+			sizeOfResult = sizeof(WiFiPASS);
 		} else if (value[1] == 0x01) {
-			MioResult[0] = 0x65;
-			MioResult[1] = 0x01;
-			MioResult[3] = 0xFF;
+			/*TestResult[0] = 0x65;
+			TestResult[1] = 0x01;
+			TestResult[2] = 0x01;
+			TestResult[3] = 0x01;
+			TestResult[4] = 0x01;*/
+			constTestResult = WiFiSSID;
+			sizeOfResult = sizeof(WiFiSSID);
+		} else {
+			TestResult[0] = 0x00;
+			TestResult[1] = 0x00;
+			TestResult[2] = 0x00;
+			TestResult[3] = 0x00;
+			TestResult[4] = 0x00;
+			constTestResult = TestResult;
+			sizeOfResult = sizeof(TestResult);
 		}
 	} else {
-		ecode = 0xFF;
+		ecode = BT_ATT_ERROR_UNSUPPORTED_GROUP_TYPE;
+		TestResult[0] = 0x00;
+		TestResult[1] = 0x00;
+		TestResult[2] = 0x00;
+		TestResult[3] = 0x00;
+		TestResult[4] = 0x00;
+		constTestResult = TestResult;
+		sizeOfResult = sizeof(TestResult);
+		goto done;
 	}
-
-	/*if (value[0] == 0x00) {
-		server->svc_chngd_enabled = false;
-	} else if (value[0] == 0x02) {
-		server->svc_chngd_enabled = true;
-	} else {
-		ecode = 0xFF;
-	}*/
 	
-	DBG("Test control point write %s: %d %d %d %d %d\n", ecode ? "NG" : "OK", 
-				value[0], value[1], value[2], value[3], value[4]);
+	DBG("Test control point write: %d %d\n", 
+				TestResult[0], TestResult[1]);//, value[2], value[3], value[4]);
 done:
 	DBG("Test write %s\n", ecode ? "NG" : "OK");
 	gatt_db_attribute_write_result(attrib, id, ecode);
