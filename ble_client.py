@@ -43,6 +43,9 @@ async def connect_and_interact(address: str):
                             print(f" successfully written to characteristic {characteristic.uuid} \n")
                         except Exception as e:
                             print(f"    Failed to write characteristic: {e}")
+                        
+                        counter += 5
+                        if counter >= 255: counter = 0
 
                     # Optionally subscribe to notifications for characteristics
                     if "notify" in characteristic.properties:
@@ -64,8 +67,6 @@ async def connect_and_interact(address: str):
             # except Exception as e:
             #     print(f"Failed to write to GATT characteristic: {e}")
             
-            counter += 5
-            if counter >= 255: counter = 0
             print(f"\nTest start: {start_time} to {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
             await asyncio.sleep(5)       
 
