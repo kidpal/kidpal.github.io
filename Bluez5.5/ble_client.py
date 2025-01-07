@@ -19,39 +19,40 @@ async def connect_and_interact(address: str):
                     print(f"  - Characteristic UUID: {characteristic.uuid}")
                     print(f"    Properties: {characteristic.properties}")
 
+                    # If writeable, write the value to the characteristic
+                    if "write" in characteristic.properties:
+                        try:
+                            if ( characteristic.uuid == "0a0a1011-4e41-4249-5f49-445f42415345"):
+                                # data = bytearray([0x88, 0x88, 0x88, 0x88])
+                                # data = bytearray([counter+1,counter+2,counter+3,counter+4,counter+5])
+                                # counter += 5
+
+                                counter += 1
+                                if counter%2 == 0:
+                                    data = bytearray([0x65, 0x00]) # Mio Command 0x65, item 0x00
+                                else:
+                                    data = bytearray([0x65, 0x01]) # Mio Command 0x65, item 0x01
+                                
+                                if counter >= 255: counter = 0
+                                await client.write_gatt_char(characteristic.uuid, data)
+                                print("    Write values: ", end=" ")
+                                for d in data: print(f"{int(d)}", end=" ")
+                                print(f" successfully written to characteristic {characteristic.uuid} \n")
+                        except Exception as e:
+                            print(f"    Failed to write characteristic: {e}")
+
                     # If readable, read the value of the characteristic
                     if "read" in characteristic.properties:
                         try:
                             value = await client.read_gatt_char(characteristic.uuid)
                             if ( characteristic.uuid == "0a0a1011-4e41-4249-5f49-445f42415345"):
-                                print("    Value: ",end=" ")
+                                print(f"   Read bytes: {value}")
+                                print("    Read values: ",end=" ")
                                 for v in value: print(int(v), end=" ")
-                                print("\n")
                             else:
-                                print(f"    Value: {value}")
+                                print(f"    Read bytes: {value}")
                         except Exception as e:
                             print(f"    Failed to read characteristic: {e}")
-                    
-                    # If writeable, write the value to the characteristic
-                    if "write" in characteristic.properties:
-                        try:
-                            # data = bytearray([0x88, 0x88, 0x88, 0x88])
-                            # data = bytearray([counter+1,counter+2,counter+3,counter+4,counter+5])
-                            # counter += 5
-
-                            # counter += 1
-                            if counter%2 == 0:
-                                data = bytearray([0x65, 0x00]) # Mio Command 0x65, item 0x00
-                            else:
-                                data = bytearray([0x65, 0x01]) # Mio Command 0x65, item 0x01
-                            
-                            if counter >= 255: counter = 0
-                            await client.write_gatt_char(characteristic.uuid, data)
-                            print("    Write values: ", end=" ")
-                            for d in data: print(f"{int(d)}", end=" ")
-                            print(f" successfully written to characteristic {characteristic.uuid} \n")
-                        except Exception as e:
-                            print(f"    Failed to write characteristic: {e}")
 
                     # Optionally subscribe to notifications for characteristics
                     if "notify" in characteristic.properties:
@@ -61,7 +62,9 @@ async def connect_and_interact(address: str):
                         await client.start_notify(characteristic.uuid, notification_handler)
                         await asyncio.sleep(5)  # Receive notifications for 5 seconds
                         await client.stop_notify(characteristic.uuid)
-            
+                    print("\n")
+                print("\n")
+                
             # try:
             #     # Replace with the UUID of the GATT characteristic to write to
             #     characteristic_uuid = "0000bbbb-0000-1000-8000-00805f9b34fb"
@@ -74,7 +77,7 @@ async def connect_and_interact(address: str):
             #     print(f"Failed to write to GATT characteristic: {e}")
             
             print(f"\nTest start: {start_time} to {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
-            await asyncio.sleep(5)       
+            await asyncio.sleep(15)
 
 async def main():
     # # Discover BLE devices
