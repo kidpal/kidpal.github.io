@@ -698,7 +698,7 @@ static void gap_appearance_read_cb(struct gatt_db_attribute *attrib,
 done:
 	gatt_db_attribute_read_result(attrib, id, error, value, len);
 }
-
+ 
 /* Test read callback of custom service and characteristics */
 static uint8_t TestResult[5] = {0x00, 0x00, 0x00, 0x00, 0x00};
 static uint8_t WiFiSSID[] = {0x4D, 0x69, 0x56, 0x75, 0x65, 
@@ -1254,13 +1254,13 @@ static void populate_test_service(struct btd_gatt_database *database)
 
 	bt_uuid128_create(&uuid, test_cp);
 	gatt_db_service_add_characteristic(service, &uuid, BT_ATT_PERM_READ | BT_ATT_PERM_WRITE,
-							BT_GATT_CHRC_PROP_READ | BT_GATT_CHRC_PROP_WRITE,
+							BT_GATT_CHRC_PROP_READ | BT_GATT_CHRC_PROP_WRITE | BT_GATT_CHRC_PROP_NOTIFY,
 							gatt_custom_cp_read_cb,
 							gatt_custom_cp_write_cb, database);
 
 	bt_uuid128_create(&uuid, test_pm);
 	gatt_db_service_add_characteristic(service, &uuid, BT_ATT_PERM_READ | BT_ATT_PERM_WRITE,
-							BT_GATT_CHRC_PROP_READ | BT_GATT_CHRC_PROP_WRITE,
+							BT_GATT_CHRC_PROP_READ | BT_GATT_CHRC_PROP_WRITE | BT_GATT_CHRC_PROP_NOTIFY,
 							gatt_custom_ft_read_cb,
 							gatt_custom_ft_write_cb, database);
 
