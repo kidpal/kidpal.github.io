@@ -700,7 +700,7 @@ done:
 }
  
 /* Test read callback of custom service and characteristics */
-static uint8_t TestResult[5] = {0x00, 0x00, 0x00, 0x00, 0x00};
+static uint8_t TestResult[] = {0x00, 0x00, 0x00, 0x00, 0x00};
 static uint8_t WiFiSSID[] = {0x4D, 0x69, 0x56, 0x75, 0x65, 
 								0x5F, 
 								0x62, 0x30, 0x30, 0x35, 0x35, 0x30}; //MiVue_b00550
@@ -785,7 +785,7 @@ static void gatt_custom_cp_write_cb(struct gatt_db_attribute *attrib,
 	}
 	
 	DBG("Test control point write: %d %d\n", 
-				TestResult[0], TestResult[1]);//, value[2], value[3], value[4]);
+				value[0], value[1]);//, value[2], value[3], value[4]);
 done:
 	DBG("Test write %s\n", ecode ? "NG" : "OK");
 	gatt_db_attribute_write_result(attrib, id, ecode);
@@ -1256,7 +1256,7 @@ static void populate_test_service(struct btd_gatt_database *database)
 	gatt_db_service_add_characteristic(service, &uuid, BT_ATT_PERM_READ | BT_ATT_PERM_WRITE,
 							BT_GATT_CHRC_PROP_READ | BT_GATT_CHRC_PROP_WRITE | BT_GATT_CHRC_PROP_NOTIFY,
 							gatt_custom_cp_read_cb,
-							gatt_custom_cp_write_cb, database);
+							gatt_custom_cp_write_cb, database); //Test
 
 	bt_uuid128_create(&uuid, test_pm);
 	gatt_db_service_add_characteristic(service, &uuid, BT_ATT_PERM_READ | BT_ATT_PERM_WRITE,
