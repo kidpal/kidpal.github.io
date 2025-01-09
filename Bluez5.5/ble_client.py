@@ -27,13 +27,11 @@ async def connect_and_interact(address: str):
                                 # data = bytearray([counter+1,counter+2,counter+3,counter+4,counter+5])
                                 # counter += 5
 
-                                counter += 1
                                 if counter%2 == 0:
                                     data = bytearray([0x65, 0x00]) # Mio Command 0x65, item 0x00
                                 else:
                                     data = bytearray([0x65, 0x01]) # Mio Command 0x65, item 0x01
                                 
-                                if counter >= 255: counter = 0
                                 await client.write_gatt_char(characteristic.uuid, data)
                                 print("    Write values: ", end=" ")
                                 for d in data: print(f"{int(d)}", end=" ")
@@ -55,15 +53,19 @@ async def connect_and_interact(address: str):
                             print(f"    Failed to read characteristic: {e}")
 
                     # Optionally subscribe to notifications for characteristics
-                    if "notify" in characteristic.properties:
-                        def notification_handler(sender, data):
-                            print(f"Notification from {sender}: {data}")
+                    # if "notify" in characteristic.properties:
+                    #     def notification_handler(sender, data):
+                    #         print(f"Notification from {sender}: {data}")
 
-                        await client.start_notify(characteristic.uuid, notification_handler)
-                        await asyncio.sleep(5)  # Receive notifications for 5 seconds
-                        await client.stop_notify(characteristic.uuid)
+                    #     await client.start_notify(characteristic.uuid, notification_handler)
+                    #     await asyncio.sleep(5)  # Receive notifications for 5 seconds
+                    #     await client.stop_notify(characteristic.uuid)
+                    
                     print("\n")
+                
                 print("\n")
+            counter += 1
+            if counter > 255: counter = 0
                 
             # try:
             #     # Replace with the UUID of the GATT characteristic to write to
