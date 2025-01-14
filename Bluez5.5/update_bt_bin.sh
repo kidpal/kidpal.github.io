@@ -51,6 +51,16 @@ if [ -e "/mnt/mmc/bt.sh" ]; then
 fi
 
 echo " "
+if [ -e "/mnt/mmc/hcitool" ]; then
+	cp /mnt/mmc/hcitool /customer/bluetooth/bin/
+	sync
+	chmod a+rx /customer/bluetooth/bin/hcitool
+	sync
+	ls -al /customer/bluetooth/bin/hcitool
+	echo "hcitool is copied to /customer/bluetooth/bin/"
+fi
+
+echo " "
 if [ -e "/mnt/mmc/btgatt-server" ]; then
 	cp /mnt/mmc/btgatt-server /customer/bluetooth/bin/
 	sync
