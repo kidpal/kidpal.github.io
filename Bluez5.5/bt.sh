@@ -24,19 +24,26 @@ case "$1" in
 	./customer/bluetooth/bin/bluetoothd -n -d -C &
 	sleep 1
 	./customer/bluetooth/bin/hciconfig hci0 up
-	
 	sleep 1
+	
 	SSID=`nvconf get 1 wireless.ap.ssid`
 	./customer/bluetooth/bin/hciconfig hci0 name $SSID
-	sleep 1
-	./customer/bluetooth/bin/hcitool -i hci0 cmd 0x08 0x0006 20 00 20 00 00 00 00 00 00 00 00 00 00 07 00
-	sleep 1
-	./customer/bluetooth/bin/hcitool -i hci0 cmd 0x08 0x0008 0D FF 4D 69 56 75 65 5F 62 30 30 35 35 30
-	sleep 1
-	./customer/bluetooth/bin/hcitool -i hci0 cmd 0x08 0x000A 01
 	
 	sleep 1
 	./customer/bluetooth/bin/hciconfig hci0 reset
+	
+	#sleep 1
+	#./customer/bluetooth/bin/hciconfig hci0 leadv
+	#sleep 1
+	#./customer/bluetooth/bin/hcitool -i hci0 cmd 0x08 0x0006 20 00 20 00 00 00 00 00 00 00 00 00 00 07 00
+	#sleep 1
+	#./customer/bluetooth/bin/hcitool -i hci0 cmd 0x08 0x0008 0D FF 4D 69 56 75 65 5F 62 30 30 35 35 30 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+	#sleep 1
+	#./customer/bluetooth/bin/hcitool -i hci0 cmd 0x08 0x000A 01
+	
+	#sleep 1
+	#./customer/bluetooth/bin/bluetoothctl advertise on &
+	#echo "BT running ......"
 ;;
   stop)
     ./customer/bluetooth/bin/hciconfig hci0 down
