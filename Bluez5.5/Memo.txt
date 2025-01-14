@@ -1,0 +1,18 @@
+* Advertising Data
+    hciconfig hci0 up
+    hciconfig hci0 leadv 0
+
+    hcitool -i hci0 cmd 0x08 0x0006 20 00 20 00 00 00 00 00 00 00 00 00 00 07 00
+    hcitool -i hci0 cmd 0x08 0x0008 0D FF 4D 69 56 75 65 5F 62 30 30 35 35 30
+    hcitool -i hci0 cmd 0x08 0x000A 01
+
+* Test for custom data: 
+    First byte is length: 0x0D is 13 bytes folllowing
+    Second byte is Type: 0xFF is manufacturer specific data
+    
+    0x0D 0xFF 0x4D 0x69 0x56 0x75 0x65 0x5F 0x62 0x30 0x30 0x35 0x35 0x30 (MiVue_b00550)
+    
+    First byte is length: 0x0B is 11 bytes folllowing
+    0x0B 0xFF 0x32 0x30 0x31 0x30 0x32 0x33 0x38 0x32 0x35 0x36 (2010238256)
+
+* Test for 32 bytes custom data: 
