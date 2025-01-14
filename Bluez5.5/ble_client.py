@@ -20,24 +20,24 @@ async def connect_and_interact(address: str):
                     print(f"    Properties: {characteristic.properties}")
 
                     # If writeable, write the value to the characteristic
-                    if "write" in characteristic.properties:
-                        try:
-                            if ( characteristic.uuid == "0a0a1011-4e41-4249-5f49-445f42415345"):
-                                # data = bytearray([0x88, 0x88, 0x88, 0x88])
-                                # data = bytearray([counter+1,counter+2,counter+3,counter+4,counter+5])
-                                # counter += 5
+                    # if "write" in characteristic.properties:
+                    #     try:
+                    #         if ( characteristic.uuid == "0a0a1011-4e41-4249-5f49-445f42415345"):
+                    #             # data = bytearray([0x88, 0x88, 0x88, 0x88])
+                    #             # data = bytearray([counter+1,counter+2,counter+3,counter+4,counter+5])
+                    #             # counter += 5
 
-                                if counter%2 == 0:
-                                    data = bytearray([0x65, 0x00]) # Mio Command 0x65, item 0x00
-                                else:
-                                    data = bytearray([0x65, 0x01]) # Mio Command 0x65, item 0x01
+                    #             if counter%2 == 0:
+                    #                 data = bytearray([0x65, 0x00]) # Mio Command 0x65, item 0x00
+                    #             else:
+                    #                 data = bytearray([0x65, 0x01]) # Mio Command 0x65, item 0x01
                                 
-                                await client.write_gatt_char(characteristic.uuid, data)
-                                print("    Write values: ", end=" ")
-                                for d in data: print(f"{int(d)}", end=" ")
-                                print(f" successfully written to characteristic {characteristic.uuid} \n")
-                        except Exception as e:
-                            print(f"    Failed to write characteristic: {e}")
+                    #             await client.write_gatt_char(characteristic.uuid, data)
+                    #             print("    Write values: ", end=" ")
+                    #             for d in data: print(f"{int(d)}", end=" ")
+                    #             print(f" successfully written to characteristic {characteristic.uuid} \n")
+                    #     except Exception as e:
+                    #         print(f"    Failed to write characteristic: {e}")
 
                     # If readable, read the value of the characteristic
                     if "read" in characteristic.properties:
@@ -101,8 +101,10 @@ async def main():
     # print(f"Connecting to {selected_device.name} ({selected_device.address})...")
     # await connect_and_interact(selected_device.address)
 
-    print(f"Connecting to D0:76:02:B0:05:51 ...")
-    await connect_and_interact('D0:76:02:B0:05:51')
+    # print(f"Connecting to D0:76:02:B0:05:51 ...")
+    # await connect_and_interact('D0:76:02:B0:05:51')
+    print(f"Connecting to D0:76:02:B0:04:C1 ...")
+    await connect_and_interact('D0:76:02:B0:04:C1')
 
 
 if __name__ == "__main__":
